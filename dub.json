@@ -3,7 +3,7 @@
 		"Jaap Geurts"
 	],
 	"copyright": "Copyright © 2020, Jaap Geurts",
-	"description": "A (linux) serial port implementation",
+	"description": "A (linux) serial port implementation that supports blocking IO",
 	"license": "LGPL-2.1",
 	"name": "dserial",
 	"dserial": ">=0.1"
