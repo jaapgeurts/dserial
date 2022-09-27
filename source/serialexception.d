@@ -1,4 +1,11 @@
 module serialexception;
+/** 
+ * Exception class for dserial
+ *
+ * Author: Jaap Geurts
+ * Date:   08-2022
+ * 
+ */
 
 /** Exceptions for DSerialport */
 class SerialException : Exception
