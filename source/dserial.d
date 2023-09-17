@@ -1,9 +1,9 @@
-module dserial;
-/** 
+/**
  * A serial port library that support non blocking IO
  * Main class that encapsulates access to the serial port
  *
- * Example:
+ * Examples:
+ * ----------------
  * DSerial serialPort = new DSerial("/dev/ttyS0");
  * serialPort.setBlockingMode(DSerial.BlockingMode.TimedImmediately);
  * serialPort.setTimeout(200); // 200 millis
@@ -16,11 +16,14 @@ module dserial;
  * // writing
  * ubyte[] msgBuf = messageToBytes(msg);
  * return serialPort.write(msgBuf);
+ * ---------------
  *
  * Author: Jaap Geurts
  * Date:   08-2022
- * 
+ *
  */
+
+module dserial;
 
 import std.string;
 import std.conv;
@@ -123,10 +126,10 @@ class DSerial {
 
             // disable IGNBRK for mismatched speed tests; otherwise receive break
             // as \000 chars
-            options.c_iflag &= ~IGNBRK; // disable break processing
+            options.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // disable break processing
             options.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
             // TODO: these flags should be unset. not set to 0
-            options.c_lflag = 0; // no signaling chars, no echo,
+            options.c_lflag &= ~(ICANON|ECHO|ECHOE|ECHONL|ISIG); // no signaling chars, no echo,
             // no canonical processing(reading lines)
 
             options.c_cflag |= (CLOCAL | CREAD); // ignore modem controls, enable reading
@@ -163,7 +166,10 @@ class DSerial {
                 break;
             }
             // not defined under linux
-            // options.c_cflag &= ~CRTSCTS; // disable crtscts
+            options.c_cflag &= ~CRTSCTS; // disable crtscts
+
+            options.c_oflag &= ~OPOST;  // Prevent special interpretation of output bytes (e.g. newline chars)
+            options.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
 
             // TODO: check error codes
             tcsetattr(fd, TCSANOW, &options);
@@ -180,7 +186,7 @@ class DSerial {
             final switch (blockingMode) {
             case BlockingMode.NonBlocking:
                 options.c_cc[VMIN] = 0; // read doesn't block
-                options.c_cc[VTIME] = 0; // don't wait for timeout 
+                options.c_cc[VTIME] = 0; // don't wait for timeout
                 break;
             case BlockingMode.TimedImmediately:
                 options.c_cc[VMIN] = 0; // read doesn't block, only timeout
@@ -246,8 +252,8 @@ class DSerial {
 
     /** Reads data into the bytes array.
       Blocks until at least one char has been read.
-      Returns: 
-        positive number of bytes read 
+      Returns:
+        positive number of bytes read
       throws exception upon error */
     ulong read(ubyte* data, ulong length) {
 
@@ -266,7 +272,7 @@ class DSerial {
         return n;
     }
 
-    /** Write bytes to the serial port 
+    /** Write bytes to the serial port
     returns bytes written,
     Only supports blocking and nonblocking writes.
     Timed writes are unsupported. */
