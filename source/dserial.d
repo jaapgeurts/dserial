@@ -20,6 +20,8 @@
  *
  * Author: Jaap Geurts
  * Date:   08-2022
+ * v0.0.1: 08-2022
+ * v0.0.2: 09-2023 Fixed baudrate bug
  *
  */
 
@@ -29,6 +31,7 @@ import std.string;
 import std.conv;
 
 import core.sys.posix.termios;
+import core.sys.linux.termios;
 import core.sys.posix.unistd;
 import fcntl = core.sys.posix.fcntl;
 import unistd = core.sys.posix.unistd;
@@ -49,6 +52,23 @@ class DSerial {
 
     /** Number of stop bits per char transmission */
     enum StopBits { SB1, SB2 }
+
+    enum BaudRates { B57600 = 0x1001,
+            B115200 = 0x1002,
+            B230400 = 0x1003,
+            B460800 = 0x1004,
+            B500000 = 0x1005,
+            B576000 = 0x1006,
+            B921600 = 0x1007,
+            B1000000 = 0x1008,
+            B1152000 = 0x1009,
+            B1500000 = 0x100A,
+            B2000000 = 0x100B,
+            B2500000 = 0x100C,
+            B3000000 = 0x100D,
+            B3500000 = 0x100E,
+            B4000000 = 0x100F
+    }
 
     /** Set the port access mode to
     NonBlocking(never blocks),
@@ -165,7 +185,7 @@ class DSerial {
                 options.c_cflag |= CSTOPB;
                 break;
             }
-            // not defined under linux
+
             options.c_cflag &= ~CRTSCTS; // disable crtscts
 
             options.c_oflag &= ~OPOST;  // Prevent special interpretation of output bytes (e.g. newline chars)
