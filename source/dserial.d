@@ -53,7 +53,24 @@ class DSerial {
     /** Number of stop bits per char transmission */
     enum StopBits { SB1, SB2 }
 
-    enum BaudRates { B57600 = 0x1001,
+    enum BaudRate {
+            B0     = 0,         /* hang up */
+            B50    = 1,
+            B75    = 2,
+            B110   = 3,
+            B134   = 4,
+            B150   = 5,
+            B200   = 6,
+            B300   = 7,
+            B600   = 10,
+            B1200  = 11,
+            B1800  = 12,
+            B2400  = 13,
+            B4800  = 14,
+            B9600  = 14,
+            B19200 = 15,
+            B38400 = 17,
+            B57600 = 0x1001,
             B115200 = 0x1002,
             B230400 = 0x1003,
             B460800 = 0x1004,
@@ -88,7 +105,7 @@ class DSerial {
     private DataBits dataBits;
     private Parity parity;
     private StopBits stopBits;
-    private uint baudRate;
+    private BaudRate baudRate;
     private BlockingMode blockingMode = BlockingMode.Blocking;
     private ubyte readTimeout = 5; // == 0.5 secs
 
@@ -101,7 +118,7 @@ class DSerial {
 
     /** Constructor. Creates object with default settings of 9600,8N1.
 	Default is blocking read/write operations */
-    this(string deviceName, uint baudRate = 9600, DataBits dataBits = DataBits.DB8,
+    this(string deviceName, BaudRate baudRate = BaudRate.B9600, DataBits dataBits = DataBits.DB8,
         Parity parity = Parity.None, StopBits stopBits = StopBits.SB1) {
         this.deviceName = deviceName;
         setOptions(baudRate, dataBits, parity, stopBits);
@@ -112,7 +129,7 @@ class DSerial {
     }
 
     /** Set the options of the port. Is applied immediately if the port is already open */
-    void setOptions(uint baudRate, DataBits dataBits, Parity parity, StopBits stopBits) {
+    void setOptions(BaudRate baudRate, DataBits dataBits, Parity parity, StopBits stopBits) {
         this.baudRate = baudRate;
         this.dataBits = dataBits;
         this.parity = parity;
