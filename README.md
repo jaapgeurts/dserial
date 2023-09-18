@@ -8,7 +8,7 @@ Default (blocking usage)
 ```D
 import dserial;
 
-DSerial serialPort = new DSerial("/dev/ttyUSB0",115200);
+DSerial serialPort = new DSerial("/dev/ttyUSB0",DSerial.BaudRate.B115200);
 serialPort.open();
 // writing
 ubyte[] msgBuf = messageToBytes(msg);
